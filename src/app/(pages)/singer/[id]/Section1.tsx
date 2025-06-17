@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { dbFirebase } from "@/app/firebaseConfig";
 import { onValue, ref } from "firebase/database";
 
-export default function Section1(props: { id: String }) {
+export default function Section1(props: { id: string }) {
 
     const { id } = props;
 

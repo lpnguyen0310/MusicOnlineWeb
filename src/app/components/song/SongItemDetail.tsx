@@ -1,5 +1,5 @@
-import { FaPlay, FaRegHeart } from "react-icons/fa6";
 import ButtonPlay from "../button/buttonPlay";
+import ButtonHeart2 from "../button/ButtonHeart2";
 
 export default function SongItemDetail(props:any) {
     const { image, title, singer, time } = props;
@@ -32,9 +32,8 @@ export default function SongItemDetail(props:any) {
                     <div className="font-[400] text-[14px] text-white mr-[10px]">
                        {time}
                     </div>
-                    <button className="text-[20px] text-white">
-                        <FaRegHeart />
-                    </button>
+                    <ButtonHeart2 {...props}/>
+                  
                 </div>
 
             </div>

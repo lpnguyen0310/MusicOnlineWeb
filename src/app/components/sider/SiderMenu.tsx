@@ -1,9 +1,9 @@
 "use client";
-import { link } from "fs";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { use } from "react";
+import { authFirebase } from "@/app/firebaseConfig";
+import { onAuthStateChanged } from "firebase/auth";
+import { useEffect, useState } from "react";
 import { FaHeart, FaHouse, FaMusic, FaPodcast, FaRightFromBracket, FaUser, FaUserPlus } from "react-icons/fa6";
+import SiderMenuItem from "./SiderMenuItem";
 
 export default function SiderMenu() {
 
@@ -27,29 +27,48 @@ export default function SiderMenu() {
         {
             icon: <FaHeart />,
             title: "Bài Hát Yêu Thích",
-            link: "/wishlist"
+            link: "/wishlist",
+            // Chỉ hiển thị nếu người dùng đã đăng nhập
+            isLogin: true
         },
         {
             icon: <FaRightFromBracket />,
             title: "Đăng Xuất",
-            link: "/logout"
+            link: "/logout",
+            // Chỉ hiển thị nếu người dùng đã đăng nhập
+            isLogin: true
         },
         {
             icon: <FaUser />,
             title: "Đăng Nhập",
-            link: "/login"
+            link: "/login",
+            // Chỉ hiển thị nếu người dùng chưa đăng nhập
+            isLogin: false
         },
         {
             icon: <FaUserPlus />,
             title: "Đăng Ký",
-            link: "/register"
+            link: "/register",
+            // Chỉ hiển thị nếu người dùng chưa đăng nhập
+            isLogin: false
         },
 
     ]
 
 
-    const pathname = usePathname();
-    console.log("Current Pathname:", pathname);
+
+    const [isLogin, setIsLogin] = useState<boolean>();
+    // Kiểm tra xem người dùng đã đăng nhập hay chưa
+    useEffect(() => {
+        onAuthStateChanged(authFirebase, (use) => {
+            if (use) {
+                setIsLogin(true);
+            } else {
+                setIsLogin(false);
+            }
+        });
+    }, [])
+    console.log("isLogin: ", isLogin);
 
 
     return (
@@ -57,21 +76,11 @@ export default function SiderMenu() {
             <nav className="py-[30px] px-[20px]">
                 <ul className="">
                     {menu.map((item, index) => (
-                        <li className="mb-[30px]" key={index}>
-                            <Link
-                                href={item.link}
-                                className={"flex items-center hover:text-[#00ADEF] capitalize " +
-                                    (pathname === item.link ? "text-[#00ADEF]" : "text-white")
-                                }
-                            >
-                                <span className="text-[20px] mr-[20px]">
-                                    {item.icon}
-                                </span>
-                                <span className="font-[700] text-[16px]">
-                                    {item.title}
-                                </span>
-                            </Link>
-                        </li>
+                        <SiderMenuItem
+                            item={item}
+                            isLogin={isLogin}
+                            key={index}
+                        />
                     ))}
                 </ul>
             </nav>

@@ -1,11 +1,43 @@
+"use client";
 import Title from "@/app/components/title/Title";
-
+import { authFirebase, dbFirebase } from "@/app/firebaseConfig";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { ref, set } from "firebase/database";
+import { useRouter } from "next/navigation";
 export default function RegisterPage() {
+  // Sử dụng useRouter để điều hướng không bị load lại trang
+  const router = useRouter();
+  const handleRegister =(event:any)=>{
+    event.preventDefault();
+    // Lấy giá trị từ form
+    const fullName = event.target.fullName.value;
+    const email = event.target.email.value;
+    const password = event.target.password.value;
+
+    // Code xử lý đăng ký tài khoản
+    createUserWithEmailAndPassword(authFirebase, email, password)
+      .then((userCredential) => {
+        // tạo user thành công
+        const user = userCredential.user;
+        // Lưu thông tin người dùng vào Realtime Database
+        set(ref(dbFirebase,'users/' + user.uid),{
+          fullName: fullName,
+        }).then(()=>{
+          router.push("/");
+        });
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.error("Error during registration:", errorCode, errorMessage);
+      });
+    }
+     
   return (
     <>
       <div className="w-[500px] mx-auto mt-[60px]">
         <Title text="Đăng Ký Tài Khoản" className="text-center" />
-        <form className="">
+        <form className="" onSubmit={handleRegister}>
           <div className="mb-[20px]">
             <label className="block mb-[5px] font-[600] text-[14px]" htmlFor="fullName">
               <span className="text-white">Họ và Tên</span>

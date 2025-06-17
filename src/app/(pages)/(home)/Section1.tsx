@@ -27,7 +27,8 @@ export default function Section1() {
           listen: data[key].listen || 0,
           singerId: data[key].singerId,
           link: `/song/${key}`,
-          audio: data[key].audio
+          audio: data[key].audio,
+          wishlist: data[key].wishlist
         }));
         // Nên làm ở BE
         songsArray = songsArray.splice(0, 3); // Lấy 3 phần tử đầu tiên
@@ -77,6 +78,7 @@ export default function Section1() {
                     listen={item.listen}
                     link={item.link}
                     audio={item.audio}
+                    wishlist={item.wishlist}
                   />
                 ))}
               </>

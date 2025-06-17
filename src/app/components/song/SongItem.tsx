@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { FaHeart, FaPlay } from "react-icons/fa6";
 import ButtonPlay from "../button/buttonPlay";
+import ButtonHeart from "../button/ButtonHeart";
 
 export default function SongItem(props: any) {
     const { id, image, title, singer, listen, link } = props;
@@ -35,9 +35,7 @@ export default function SongItem(props: any) {
                     inner-button-play"
             
                    />
-                    <button className="w-[34px] h-[34px] rounded-full border border-white inline-flex items-center justify-center text-[15px] text-white ml-[10px]">
-                        <FaHeart />
-                    </button>
+                    <ButtonHeart {...props}/>
                 </div>
             </div>
         </>

@@ -1,5 +1,5 @@
-import ButtonPlay from "../button/buttonPlay";
 import ButtonHeart2 from "../button/ButtonHeart2";
+import ButtonPlay from "../button/ButtonPlay";
 
 export default function SongItemDetail(props:any) {
     const { image, title, singer, time } = props;

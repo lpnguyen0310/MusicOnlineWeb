@@ -1,5 +1,5 @@
 import Link from "next/link";
-import ButtonPlay from "../button/buttonPlay";
+import ButtonPlay from "../button/ButtonPlay";
 import ButtonHeart from "../button/ButtonHeart";
 
 export default function SongItem(props: any) {

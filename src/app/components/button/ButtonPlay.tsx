@@ -38,6 +38,28 @@ export default function ButtonPlay(props: any) {
             const elementButtonPlay:any = elementPlayAudio.querySelector(".inner-button-play");
             elementButtonPlay.classList.add("play");
 
+            // Lấy tổng thời gian của audio
+            // Đây là sự kiện onloadedmetadata, nó sẽ được gọi khi metadata của audio đã được tải xong
+            const elementPlayTimeTotal:any = elementPlayAudio.querySelector(".inner-play-time .inner-total");
+            const elementPlayTimeCurrent:any = elementPlayAudio.querySelector(".inner-play-time .inner-current");
+
+            elementAudio.onloadedmetadata = () => {
+                const totalTime = elementAudio.duration; // Lấy tổng thời gian của audio
+                console.log("Tổng thời gian của audio:", totalTime);
+                // Cập nhật giá trị max cho input range
+                elementPlayTimeTotal.max = totalTime;
+                // Lấy giá trị hiện tại của audio
+                elementAudio.ontimeupdate = () => {
+                    const currentTime = elementAudio.currentTime; // Lấy thời gian hiện tại của audio
+                    console.log("Thời gian hiện tại của audio:", currentTime);
+                    // Cập nhật giá trị cho input range
+                    elementPlayTimeTotal.value = currentTime;
+                    // Cập nhật chiều rộng của thanh hiện tại
+                    const percent = currentTime * 100 / totalTime; // Tính phần trăm
+                    elementPlayTimeCurrent.style.width =`${percent}%`; // Cập nhật chiều rộng của thanh hiện tại
+                }
+            }
+
         }   
     }
     return (

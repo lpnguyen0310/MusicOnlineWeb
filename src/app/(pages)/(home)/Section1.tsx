@@ -64,7 +64,7 @@ export default function Section1() {
         {/* khối bên phải */}
         <div className="ml-[20px] flex-1">
           <Title text="Nghe Nhiều" />
-          <div className="grid grid-cols-1 gap-[8px]">
+          <div className="grid grid-cols-1 gap-[8px]" song-list="">
             {dataFinal && (
               <>
                 {dataFinal.map((item:any) => (

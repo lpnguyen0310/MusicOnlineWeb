@@ -1,12 +1,15 @@
 "use client";
 import { FaPlay } from "react-icons/fa";
 export default function ButtonPlay(props: any) {
-    const { id, audio,image,title,singer,listen,link } = props;
-        console.log("RENDERING BUTTON PLAY", id, audio); // 👈 THÊM LOG NÀY
-
+    const { id,audio,image,title,singer,className = "" } = props;
+    // Hàm xử lý sự kiện khi nhấn nút play
     const handlePlay = () => {
+        // Thẻ play-audio sẽ chứa các thông tin về bài hát đang phát 
+        // Đây là thẻ cha của các thành phần phát nhạc
         const elementPlayAudio = document.querySelector(".play-audio")
         if(elementPlayAudio){
+            // Chèn thuộc tính songId vào thẻ play-audio
+            elementPlayAudio.setAttribute("song-id",id);
 
             // Phát nhạc 
             const elementAudio:any = elementPlayAudio.querySelector(".inner-audio");
@@ -66,7 +69,7 @@ export default function ButtonPlay(props: any) {
         <>
             <button
                 onClick={handlePlay}
-                className="w-[34px] h-[34px] rounded-full border border-white inline-flex items-center justify-center text-[15px] text-white ml-[10px]">
+                className={className}>
                 <FaPlay />
             </button>
         </>

@@ -3,14 +3,14 @@ import { FaHeart, FaPlay } from "react-icons/fa6";
 import ButtonPlay from "../button/buttonPlay";
 
 export default function SongItem(props: any) {
-    const { image, title, singer, listen,link} = props;
+    const { id, image, title, singer, listen, link } = props;
 
     return (
         <>
-            <div className="bg-[#212121] rounded-[15px] p-[10px] flex items-center" >
+            <div className="bg-[#212121] rounded-[15px] p-[10px] flex items-center" data-song={id} >
                 {/* ảnh */}
                 <div className="w-[76px] aspect-square rounded-[10px] truncate mr-[10px]">
-                    <img src={image} alt={title} className="w-full h-full object-cover"/>
+                    <img src={image} alt={title} className="w-full h-full object-cover" />
                 </div>
                 {/* thông tin */}
                 <div className="flex-1">
@@ -29,7 +29,12 @@ export default function SongItem(props: any) {
                 </div>
                 {/* Nút  */}
                 <div className="">
-                   <ButtonPlay {...props}/>
+                    <ButtonPlay {...props} className="w-[34px] h-[34px] rounded-full border 
+                   border-white inline-flex items-center 
+                   justify-center text-[15px] text-white ml-[10px]
+                    inner-button-play"
+            
+                   />
                     <button className="w-[34px] h-[34px] rounded-full border border-white inline-flex items-center justify-center text-[15px] text-white ml-[10px]">
                         <FaHeart />
                     </button>

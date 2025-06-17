@@ -1,9 +1,12 @@
+import Title from "@/app/components/title/Title";
+import Section1 from "./Section2";
+
 export default function SearchPage() {
   return (
     <>
-      <h1 className="text-[32px] font-[700]">
-        Trang tìm kiếm bài hát 
-      </h1>
+     <div className="">
+        <Section1 />
+     </div>
     </>
   );
 }

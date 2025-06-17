@@ -26,7 +26,8 @@ export default function Section1() {
           singer: "",
           listen: data[key].listen || 0,
           singerId: data[key].singerId,
-          link: `/song/${key}`
+          link: `/song/${key}`,
+          audio: data[key].audio
         }));
         // Nên làm ở BE
         songsArray = songsArray.splice(0, 3); // Lấy 3 phần tử đầu tiên
@@ -69,11 +70,13 @@ export default function Section1() {
                 {dataFinal.map((item:any) => (
                   <SongItem
                     key = {item.id}
+                    id={item.id}
                     image={item.image}
                     title={item.title}
                     singer={item.singer}
                     listen={item.listen}
                     link={item.link}
+                    audio={item.audio}
                   />
                 ))}
               </>

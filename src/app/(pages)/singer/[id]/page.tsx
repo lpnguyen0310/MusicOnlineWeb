@@ -1,18 +1,16 @@
 import CardInfo from "@/app/components/card/CardInfo";
 import Section2 from "./Section2";
+import Section1 from "./Section1";
 
-export default  function SingerDetailPage() {
- 
+export default async function SingerDetailPage({params} :any) {
+  const { id } = params;
   return (
     <>
-      <CardInfo 
-        image="/demo/image-6.png"
-        title="Sơn Tùng M-TP"
-        description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
-      />
+    {/* Section1: SingerInfo */}
+      <Section1 id={id}/>
 
       {/* Section2: Danh sách bài hát của ca sĩ */}
-      <Section2 />
+      <Section2 id ={id}/>
     </>
   );
 }

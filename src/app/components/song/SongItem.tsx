@@ -2,7 +2,7 @@ import Link from "next/link";
 import { FaHeart, FaPlay } from "react-icons/fa6";
 
 export default function SongItem(props: any) {
-    const { image, title, singer, listen } = props;
+    const { image, title, singer, listen,link } = props;
 
     return (
         <>
@@ -14,7 +14,7 @@ export default function SongItem(props: any) {
                 {/* thông tin */}
                 <div className="flex-1">
                     <div className="mb-[2px]">
-                        <Link href="/play" className=
+                        <Link href={link} className=
                             "font-[600] text-white text-[16px]">
                             {title}
                         </Link>

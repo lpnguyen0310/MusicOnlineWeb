@@ -1,7 +1,8 @@
 import CardInfo from "@/app/components/card/CardInfo";
 import Section2 from "./Section2";
 
-export default function SingerDetailPage() {
+export default  function SingerDetailPage() {
+ 
   return (
     <>
       <CardInfo 

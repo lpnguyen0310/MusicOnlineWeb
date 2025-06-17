@@ -1,57 +1,60 @@
+"use client";
+
 import CardItem from "@/app/components/card/CardItems";
 import Title from "@/app/components/title/Title";
-
+import { useEffect, useState } from "react";
+import { dbFirebase } from "@/app/firebaseConfig";
+import { onValue, ref } from "firebase/database";
 export default function Section3() {
 
-    const data = [
-        {
-            image: "/demo/image-6.png",
-            title: "Sơn Tùng M-TP",
-            description: "Những ca khúc nhạc trẻ hay nhất hiện nay",
-            link: "",
-        },
-        {
-            image: "/demo/image-7.png",
-            title: "Nal",
-            description: "Những ca khúc nhạc trẻ hay nhất hiện nay",
-            link: "",
-        },
-        {
-            image: "/demo/image-8.png",
-            title: "Jimmy Nguyễn",
-            description: "Những ca khúc nhạc trẻ hay nhất hiện nay",
-            link: "",
-        },
-        {
-            image: "/demo/image-9.png",
-            title: "Tuấn Hưng",
-            description: "Những ca khúc nhạc trẻ hay nhất hiện nay",
-            link: "",
-        },
-        {
-            image: "/demo/image-10.png",
-            title: "BigDaddy",
-            description: "Những ca khúc nhạc trẻ hay nhất hiện nay",
-            link: "",
-        },
+    const [dataFinal, setDataFinal] = useState<any>();
 
-    ]
+    useEffect(() => {
+        const singersRef = ref(dbFirebase, 'singers');
+        onValue(singersRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                // Lặp qua bảng singerId xong tìm bản ghi ca sĩ có id đó
+                // Chuyển đổi dữ liệu từ object sang mảng
+                // Object.keys(data) sẽ lấy tất cả các key của object lặp qua từng key của  object
+                let singersArray = Object.keys(data).map(key => ({
+                    id: key,
+                    // ...data[key]
+                    image: data[key].image,
+                    title: data[key].title,
+                    describe: data[key].description,
+                    link: `/singer/${key}`,
+                }));
+                // Nên làm ở BE
+                singersArray = singersArray.splice(0, 5); // Lấy 3 phần tử đầu tiên
+                // set để cập nhật lại state dataFinal
+                setDataFinal(singersArray);
+            }
+        })
+
+    }, []);
     return (
         <>
             <div className="mt-[30px]">
                 <Title text="Ca Sĩ Nổi Bật" />
                 <div className="grid grid-cols-5 gap-[20px]">
-                    {data.map((item, index) => (
-                        <CardItem
-                            key={index}
-                            // image={item.image}
-                            // title={item.title}
-                            // description={item.description}
-                            // link={item.link}
-                            // Đây là cú pháp trả ra tất cả các thuộc tính của item 
-                            {...item}
-                        />
-                    ))}
+                    {dataFinal && (
+                        <>
+                            {dataFinal.map((item: any, index: number) => (
+                                <CardItem
+                                    key={index}
+                                    // image={item.image}
+                                    // title={item.title}
+                                    // description={item.description}
+                                    // link={item.link}
+                                    // Đây là cú pháp trả ra tất cả các thuộc tính của item 
+                                    {...item}
+                                />
+                            ))}
+                        </>
+
+                    )}
+
 
                 </div>
             </div>

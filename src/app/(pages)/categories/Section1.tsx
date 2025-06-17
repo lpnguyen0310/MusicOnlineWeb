@@ -18,7 +18,7 @@ export default function Section1() {
                 // Lặp qua bảng singerId xong tìm bản ghi ca sĩ có id đó
                 // Chuyển đổi dữ liệu từ object sang mảng
                 // Object.keys(data) sẽ lấy tất cả các key của object lặp qua từng key của  object
-                let categoriesArray = Object.keys(data).map(key => ({
+                const categoriesArray = Object.keys(data).map(key => ({
                     id: key,
                     // ...data[key]
                     image: data[key].image,

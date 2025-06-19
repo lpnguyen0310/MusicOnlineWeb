@@ -1,6 +1,7 @@
 "use client";
 import { FaBackwardStep, FaForwardStep, FaPause, FaPlay } from "react-icons/fa6";
 export default function PlayActions() {
+    
     const handlePlay = () => {
         const elementPlayAudio = document.querySelector(".play-audio");
         if (elementPlayAudio) {

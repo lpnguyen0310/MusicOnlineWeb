@@ -9,31 +9,75 @@ export default function Section2(props: { id: string }) {
     const { id } = props;
     const [dataFinal, setDataFinal] = useState<any>();
 
+    // Lấy thời gian từ audio 
+    const getAudioDuration = (audioUrl: string): Promise<number> => {
+        return new Promise((resolve, reject) => {
+            const audio = new Audio(audioUrl);
+            audio.onloadedmetadata = () => {
+                resolve(audio.duration);
+            };
+            audio.onerror = (error) => {
+                reject(error);
+            };
+        });
+    };
+
     useEffect(() => {
         const songsRef = ref(dbFirebase, 'songs');
-        onValue(songsRef, (snapshot) => {
-            const data = snapshot.val();
-            if (data) {
-                // Lặp qua bảng singerId xong tìm bản ghi ca sĩ có id đó
-                // Chuyển đổi dữ liệu từ object sang mảng
-                // Object.keys(data) sẽ lấy tất cả các key của object lặp qua từng key của  object
-                let songsArray = Object.keys(data).map(key => ({
-                    id: key,
-                    // ...data[key]
-                    image: data[key].image,
-                    title: data[key].title,
-                    singer: "Hồ Quang Hiếu, Huỳnh Văn", // Tạm thời để cứng
-                    listen: data[key].listen || 0,
-                    singerId: data[key].singerId,
-                    categoryId: data[key].categoryId,
-                    time: data[key].time,
-                    audio: data[key].audio
-                }));
-                songsArray = songsArray.filter(item => item.singerId.includes(id));
-                setDataFinal(songsArray);
+        // Lấy data từ bảng songs
+        const singerRef = ref(dbFirebase, 'singers');
+
+        // Lấy dữ liệu từ bảng songs
+        onValue(singerRef, (singerSnapshot) => {
+            const singerData = singerSnapshot.val();
+            if (singerData) {
+                // Nếu có dữ liệu ca sĩ, tiếp tục lấy dữ liệu bài hát
+                onValue(songsRef, (snapshot) => {
+                    const data = snapshot.val();
+                    if (data && singerData) {
+                        let songsArray = Object.keys(data).map(key => {
+                            // Lấy thông tin bài hát từ data
+                            const song = data[key];
+                            // Lặp qua song.id để lấy thông tin ca sĩ
+                            let singersName = [];
+                            // Kiểm tra nếu singerId là mảng và lấy tên ca sĩ tương ứng
+                            if (song.singerId && Array.isArray(song.singerId)) {
+                                // Nếu singerId là mảng, lặp qua từng id để lấy tên ca sĩ
+                                for (let id of song.singerId) {
+                                    // Kiểm tra nếu id tồn tại trong dữ liệu ca sĩ
+                                    if (singerData[id]) {
+                                        // Thêm tên ca sĩ vào mảng singersName
+                                        singersName.push(singerData[id].title);
+                                    }
+                                }
+                            }
+                            return {
+                                id: key,
+                                image: song.image,
+                                title: song.title,
+                                singer: singersName.join(', '), // Nối tên ca sĩ thành 1 chuỗi
+                                listen: song.listen || 0,
+                                singerId: song.singerId,
+                                link: `/song/${key}`,
+                                audio: song.audio,
+                                wishlist: song.wishlist,
+                                time: song.audio ? getAudioDuration(song.audio).then(duration => {
+                                    // Chuyển đổi thời gian từ giây sang định dạng phút:giây
+                                    const minutes = Math.floor(duration / 60);
+                                    const seconds = Math.floor(duration % 60);
+                                    return `${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
+                                }) : '0:00'
+                            }
+                        })
+                        // Lấy 3 bài hát đầu tiên
+                        songsArray = songsArray.filter(item => item.singerId.includes(id));
+                        // Cặp dữ liệu với tên bài hát
+                        setDataFinal(songsArray);
+
+                    }
+                })
             }
         })
-
     }, []);
 
     return (

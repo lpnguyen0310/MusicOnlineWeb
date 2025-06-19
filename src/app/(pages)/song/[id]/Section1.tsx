@@ -10,17 +10,33 @@ export default function Section1(props: { id: string }) {
 
     useEffect(() => {
         const songRef = ref(dbFirebase, "songs/" + id);
-        onValue(songRef, (snapshot) => {
-            const data = snapshot.val();
-            if (data) {
-                setDataFinal({
-                    image: data.image,
-                    title: data.title,
-                    description: "Hồ Quang Hiếu",
-                });
-            }
-        })
+        const singerRef = ref(dbFirebase, "singers");
+        onValue(singerRef, (singerSnapshot) => {
+      const singerData = singerSnapshot.val();
+      if (singerData) {
+        // Sau khi lấy singer xong, tiếp tục lấy bài hát
+        onValue(songRef, (songSnapshot) => {
+          const songData = songSnapshot.val();
+          if (songData) {
+            let singersName: string[] = [];
 
+            if (Array.isArray(songData.singerId)) {
+              for (let singerId of songData.singerId) {
+                if (singerData[singerId]) {
+                  singersName.push(singerData[singerId].title);
+                }
+              }
+            }
+
+            setDataFinal({
+              image: songData.image,
+              title: songData.title,
+              description: singersName.join(', ') 
+            });
+          }
+        });
+      }
+      });
     }, []);
     return (
         <>

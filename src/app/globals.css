@@ -41,3 +41,24 @@
     display: none;
 }
 /* End button play audio*/
+
+/* scrollbar song/id */
+.lyrics-box::-webkit-scrollbar {
+  width: 8px;
+}
+
+.lyrics-box::-webkit-scrollbar-track {
+  background: #212121; /* cùng màu nền */
+  border-radius: 8px;
+}
+
+.lyrics-box::-webkit-scrollbar-thumb {
+  background-color: #444; /* màu thanh cuộn */
+  border-radius: 8px;
+}
+
+.lyrics-box::-webkit-scrollbar-thumb:hover {
+  background-color: #666; /* màu khi hover */
+}
+
+/* End scrollbar */

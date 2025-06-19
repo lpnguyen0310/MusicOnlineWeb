@@ -4,7 +4,7 @@ import ButtonPlay from "../button/ButtonPlay";
 export default function SongItemDetail(props:any) {
     const { image, title, singer, time } = props;
     return (
-        <>
+        <>  
             <div className="flex items-center justify-between bg-[#212121] py-[10px] px-[18px] rounded-[15px] mb-[10px]">
                 <div className="w-[40%] flex items-center">
                     <ButtonPlay {...props} className= "text-[24px] text-white" />

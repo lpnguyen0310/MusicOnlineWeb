@@ -15,57 +15,61 @@ export default function Section3(props: { id: string }) {
 
     useEffect(() => {
         const songRef = ref(dbFirebase, "songs/" + id);
-        onValue(songRef, (snapshot) => {
-            const data = snapshot.val();
-            if (data) {
-                const categoryId = data.categoryId;
-                const songsRef = ref(dbFirebase, 'songs');
-                onValue(songsRef, (snapshot) => {
-                    const data = snapshot.val();
-                    if (data) {
-                        // Lặp qua bảng singerId xong tìm bản ghi ca sĩ có id đó
-                        // Chuyển đổi dữ liệu từ object sang mảng
-                        // Object.keys(data) sẽ lấy tất cả các key của object lặp qua từng key của  object
-                        let songsArray = Object.keys(data).map(key => ({
-                            id: key,
-                            // ...data[key]
-                            image: data[key].image,
-                            title: data[key].title,
-                            singer: "Hồ Quang Hiếu, Huỳnh Văn", // Tạm thời để cứng
-                            listen: data[key].listen || 0,
-                            singerId: data[key].singerId,
-                            categoryId: data[key].categoryId,
-                            time: data[key].time
-                        }));
-                        songsArray = songsArray.filter(item => item.categoryId === categoryId && item.id !== id);
-                        setDataFinal(songsArray);
-                    }
-                })
-            }
-        })
+        const singerRef = ref(dbFirebase, "singers");
+        const songsRef = ref(dbFirebase, "songs");
 
-    }, []);
+        // Lấy dữ liệu ca sĩ
+        onValue(singerRef, (singerSnapshot) => {
+            const singerData = singerSnapshot.val();
 
-    const data = [
-        {
-            image: "/demo/image-6.png",
-            title: "Cô Phòng",
-            singer: "Hồ Quang Hiếu, Huỳnh Văn",
-            time: "3:45"
-        },
-        {
-            image: "/demo/image-6.png",
-            title: "Cô Phòng",
-            singer: "Hồ Quang Hiếu, Huỳnh Văn",
-            time: "3:45"
-        },
-        {
-            image: "/demo/image-6.png",
-            title: "Cô Phòng",
-            singer: "Hồ Quang Hiếu, Huỳnh Văn",
-            time: "3:45"
-        }
-    ]
+            // Lấy thông tin bài hát hiện tại
+            onValue(songRef, (songSnapshot) => {
+                // Kiểm tra nếu bài hát hiện tại và dữ liệu ca sĩ đã được lấy
+                const currentSong = songSnapshot.val();
+                if (currentSong && singerData) {
+                    // Lấy id danh mục của bài hát hiện tại
+                    const currentCategoryId = currentSong.categoryId;
+
+                    // Lấy tất cả bài hát
+                    onValue(songsRef, (snapshot) => {
+                        const allSongs = snapshot.val();
+                        if (allSongs) {
+                            let songsArray = Object.keys(allSongs).map(key => {
+                                const song = allSongs[key];
+                                let singersName: string[] = [];
+
+                                if (Array.isArray(song.singerId)) {
+                                    for (let sid of song.singerId) {
+                                        if (singerData[sid]) {
+                                            singersName.push(singerData[sid].title);
+                                        }
+                                    }
+                                }
+                                return {
+                                    id: key,
+                                    image: song.image,
+                                    title: song.title,
+                                    singer: singersName.join(', '),
+                                    listen: song.listen || 0,
+                                    singerId: song.singerId,
+                                    categoryId: song.categoryId,
+                                    time: song.time
+                                };
+                            });
+
+                            // Lọc bài hát cùng danh mục, khác id hiện tại
+                            songsArray = songsArray.filter(item =>
+                                item.categoryId === currentCategoryId && item.id !== id
+                            );
+
+                            setDataFinal(songsArray);
+                        }
+                    });
+                }
+            });
+        });
+    }, [id]);
+
     return (
         <>
             <div className="mt-[30px]">

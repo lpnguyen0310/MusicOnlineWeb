@@ -7,63 +7,91 @@ import { dbFirebase } from "@/app/firebaseConfig";
 import { onValue, ref } from "firebase/database";
 import { authFirebase } from "@/app/firebaseConfig";
 import { onAuthStateChanged } from "firebase/auth";
+import { time } from "console";
 export default function Section1() {
     const [dataFinal, setDataFinal] = useState<any>();
-    const data = [
-        {
-            image: "/demo/image-6.png",
-            title: "Cô Phòng",
-            singer: "Hồ Quang Hiếu, Huỳnh Văn",
-            time: "3:45"
-        },
-        {
-            image: "/demo/image-6.png",
-            title: "Cô Phòng",
-            singer: "Hồ Quang Hiếu, Huỳnh Văn",
-            time: "3:45"
-        },
-        {
-            image: "/demo/image-6.png",
-            title: "Cô Phòng",
-            singer: "Hồ Quang Hiếu, Huỳnh Văn",
-            time: "3:45"
-        }
-    ]
+
     useEffect(() => {
         // Kiểm tra xem người dùng đã đăng nhập hay chưa
-
+        // Lấy thời gian từ audio 
+        const getAudioDuration = (audioUrl: string): Promise<number> => {
+            return new Promise((resolve, reject) => {
+                const audio = new Audio(audioUrl);
+                audio.onloadedmetadata = () => {
+                    resolve(audio.duration);
+                };
+                audio.onerror = (error) => {
+                    reject(error);
+                };
+            });
+        };
         onAuthStateChanged(authFirebase, (user) => {
             if (user) {
                 const userId = user.uid;
                 const songsRef = ref(dbFirebase, 'songs');
-                onValue(songsRef, (snapshot) => {
-                    const data = snapshot.val();
-                    if (data) {
+                const singerRef = ref(dbFirebase, 'singers');
 
-                        // Lặp qua bảng singerId xong tìm bản ghi ca sĩ có id đó
+                // Lấy dữ liệu ca sĩ trước
+                onValue(singerRef, (singerSnapshot) => {
+                    const singerData = singerSnapshot.val();
 
+                    // Sau đó lấy bài hát
+                    onValue(songsRef, async (snapshot) => {
+                        const data = snapshot.val();
+                        if (data && singerData) {
+                            // Duyệt từng bài hát
+                            const songsArray = await Promise.all(
+                                Object.keys(data).map(async (key) => {
+                                    const song = data[key];
 
-                        // Chuyển đổi dữ liệu từ object sang mảng
-                        // Object.keys(data) sẽ lấy tất cả các key của object lặp qua từng key của  object
-                        let songsArray = Object.keys(data).map(key => ({
-                            id: key,
-                            // ...data[key]
-                            image: data[key].image,
-                            title: data[key].title,
-                            singer: "Hồ Quang Hiếu, Huỳnh Văn",
-                            listen: data[key].listen || 0,
-                            singerId: data[key].singerId,
-                            categoryId: data[key].categoryId,
-                            time: data[key].time || "3:45",
-                            audio: data[key].audio,
-                            wishlist: data[key].wishlist,
-                        }));
-                        // Nên làm ở BE
-                        // Lọc ra những bài hát có wishlist là true và thuộc về người dùng hiện tại
-                        songsArray = songsArray.filter(item => item.wishlist && item.wishlist[userId]);
-                        setDataFinal(songsArray);
-                    }
-                })
+                                    // Lấy tên ca sĩ từ singerId[]
+                                    let singersName: string[] = [];
+                                    if (Array.isArray(song.singerId)) {
+                                        for (let id of song.singerId) {
+                                            if (singerData[id]) {
+                                                singersName.push(singerData[id].title);
+                                            }
+                                        }
+                                    }
+
+                                    // Tính thời lượng nếu có audio
+                                    let time = "0:00";
+                                    if (song.audio) {
+                                        try {
+                                            const duration = await getAudioDuration(song.audio);
+                                            const minutes = Math.floor(duration / 60);
+                                            const seconds = Math.floor(duration % 60);
+                                            time = `${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
+                                        } catch (e) {
+                                            console.error("Lỗi tính thời lượng:", e);
+                                        }
+                                    }
+
+                                    return {
+                                        id: key,
+                                        image: song.image,
+                                        title: song.title,
+                                        singer: singersName.join(', '),
+                                        listen: song.listen || 0,
+                                        singerId: song.singerId,
+                                        categoryId: song.categoryId,
+                                        audio: song.audio,
+                                        wishlist: song.wishlist,
+                                        time,
+                                        link: `/song/${key}`
+                                    };
+                                })
+                            );
+
+                            // Lọc bài hát wishlist thuộc user
+                            const filteredSongs = songsArray.filter(
+                                item => item.wishlist && item.wishlist[userId]
+                            );
+
+                            setDataFinal(filteredSongs);
+                        }
+                    });
+                });
             }
         });
 

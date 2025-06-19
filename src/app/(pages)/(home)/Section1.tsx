@@ -6,37 +6,59 @@ import { onValue, ref } from "firebase/database";
 import { useEffect, useState } from "react";
 export default function Section1() {
   const [dataFinal, setDataFinal] = useState<any>();
+  // Áp dụng loading-skeleton
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const songsRef = ref(dbFirebase, 'songs');
-    onValue(songsRef, (snapshot) => {
-      const data = snapshot.val();
-      if (data) {
+    // Lấy data từ bảng songs
+    const singerRef = ref(dbFirebase, 'singers');
 
-        // Lặp qua bảng singerId xong tìm bản ghi ca sĩ có id đó
-        
+    // Lấy dữ liệu từ bảng songs
+    onValue(singerRef, (singerSnapshot) => {
+      const singerData = singerSnapshot.val();
+      if (singerData) {
+        // Nếu có dữ liệu ca sĩ, tiếp tục lấy dữ liệu bài hát
+        onValue(songsRef, (snapshot) => {
+          const data = snapshot.val();
+          if (data && singerData) {
+            let songsArray = Object.keys(data).map(key => {
+              // Lấy thông tin bài hát từ data
+              const song = data[key];
+              // Lặp qua song.id để lấy thông tin ca sĩ
+              let singersName = [];
+              // Kiểm tra nếu singerId là mảng và lấy tên ca sĩ tương ứng
+              if (song.singerId && Array.isArray(song.singerId)) {
+                // Nếu singerId là mảng, lặp qua từng id để lấy tên ca sĩ
+                for (let id of song.singerId) {
+                  // Kiểm tra nếu id tồn tại trong dữ liệu ca sĩ
+                  if (singerData[id]) {
+                    // Thêm tên ca sĩ vào mảng singersName
+                    singersName.push(singerData[id].title);
+                  }
+                }
+              }
+              return {
+                id: key,
+                image: song.image,
+                title: song.title,
+                singer: singersName.join(', '), // Nối tên ca sĩ thành 1 chuỗi
+                listen: song.listen || 0,
+                singerId: song.singerId,
+                link: `/song/${key}`,
+                audio: song.audio,
+                wishlist: song.wishlist
+              }
+            })
+            // Lấy 3 bài hát đầu tiên
+            songsArray = songsArray.slice(0, 3);
+            // Cặp dữ liệu với tên bài hát
+            setDataFinal(songsArray);
 
-        // Chuyển đổi dữ liệu từ object sang mảng
-        // Object.keys(data) sẽ lấy tất cả các key của object lặp qua từng key của  object
-        let songsArray = Object.keys(data).map(key => ({
-          id: key,
-          // ...data[key]
-          image: data[key].image,
-          title: data[key].title,
-          singer: "",
-          listen: data[key].listen || 0,
-          singerId: data[key].singerId,
-          link: `/song/${key}`,
-          audio: data[key].audio,
-          wishlist: data[key].wishlist
-        }));
-        // Nên làm ở BE
-        songsArray = songsArray.splice(0, 3); // Lấy 3 phần tử đầu tiên
-        setDataFinal(songsArray);
-        console.log(songsArray);
+          }
+        })
       }
     })
-
   }, []);
   return (
     <>
@@ -68,9 +90,9 @@ export default function Section1() {
           <div className="grid grid-cols-1 gap-[8px]" song-list="">
             {dataFinal && (
               <>
-                {dataFinal.map((item:any) => (
+                {dataFinal.map((item: any) => (
                   <SongItem
-                    key = {item.id}
+                    key={item.id}
                     id={item.id}
                     image={item.image}
                     title={item.title}

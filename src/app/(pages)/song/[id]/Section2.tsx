@@ -1,11 +1,9 @@
 "use client";
 import React from 'react';
-import CardInfo from "@/app/components/card/CardInfo";
 import Title from '@/app/components/title/Title';
 import { dbFirebase } from "@/app/firebaseConfig";
 import { onValue, ref } from "firebase/database";
 import { useEffect, useState } from "react";
-import { LuYoutube } from 'react-icons/lu';
 export default function Section2(props: { id: string }) {
     const { id } = props;
     const [dataFinal, setDataFinal] = useState<any>();
@@ -28,8 +26,10 @@ export default function Section2(props: { id: string }) {
                 <>
                     <div className="mt-[30px]">
                         <Title text="Lời bài hát" />
-                        <div className="bg-[#212121] rounded-[15px] p-[20px] text-white font-[500]  text-[14px]">
-                            {dataFinal.lyric}
+                        <div className="bg-[#212121] rounded-[15px] p-[20px] text-white font-[500] text-[14px] whitespace-pre-line h-[300px] overflow-y-auto pr-[4px] lyrics-box ">
+                            {dataFinal.lyric.split("\\n").map((line: string, index: number) => (
+                                <p key={index} className="mb-[4px]">{line}</p>
+                            ))}
                         </div>
                     </div>
 

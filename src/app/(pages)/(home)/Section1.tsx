@@ -4,10 +4,11 @@ import Title from "@/app/components/title/Title";
 import { dbFirebase } from "@/app/firebaseConfig";
 import { onValue, ref } from "firebase/database";
 import { useEffect, useState } from "react";
+import Skeleton from "react-loading-skeleton";
+import SongItemSkeleton from "./SongItemSkeleton";
 export default function Section1() {
   const [dataFinal, setDataFinal] = useState<any>();
-  // Áp dụng loading-skeleton
-  const [loading, setLoading] = useState(true);
+  // Áp dụng loading-sle
 
   useEffect(() => {
     const songsRef = ref(dbFirebase, 'songs');
@@ -88,23 +89,33 @@ export default function Section1() {
         <div className="ml-[20px] flex-1">
           <Title text="Nghe Nhiều" />
           <div className="grid grid-cols-1 gap-[8px]" song-list="">
-            {dataFinal && (
-              <>
-                {dataFinal.map((item: any) => (
-                  <SongItem
-                    key={item.id}
-                    id={item.id}
-                    image={item.image}
-                    title={item.title}
-                    singer={item.singer}
-                    listen={item.listen}
-                    link={item.link}
-                    audio={item.audio}
-                    wishlist={item.wishlist}
-                  />
-                ))}
-              </>
-            )}
+            {dataFinal ? (<>
+
+              {dataFinal && (
+                <>
+                  {dataFinal.map((item: any) => (
+                    <SongItem
+                      key={item.id}
+                      id={item.id}
+                      image={item.image}
+                      title={item.title}
+                      singer={item.singer}
+                      listen={item.listen}
+                      link={item.link}
+                      audio={item.audio}
+                      wishlist={item.wishlist}
+                    />
+                  ))}
+                </>
+              )}
+
+            </>) : (<>
+              {Array(3).fill("").map((_, index) => (
+                <SongItemSkeleton key={index} />
+              ))}
+            </>)}
+
+
 
           </div>
         </div>

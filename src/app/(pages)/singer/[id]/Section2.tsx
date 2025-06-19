@@ -1,5 +1,6 @@
 "use client";
 import SongItemDetail from "@/app/components/song/SongItemDetail";
+import SongItemDetailSkeleton from "@/app/components/song/SongItemDetailSkeleton";
 import Title from "@/app/components/title/Title";
 import { dbFirebase } from "@/app/firebaseConfig";
 import { onValue, ref } from "firebase/database";
@@ -8,7 +9,8 @@ import React from "react";
 export default function Section2(props: { id: string }) {
     const { id } = props;
     const [dataFinal, setDataFinal] = useState<any>();
-
+    // load skeleton
+    const [loading, setLoading] = useState(true);
     // Lấy thời gian từ audio 
     const getAudioDuration = (audioUrl: string): Promise<number> => {
         return new Promise((resolve, reject) => {
@@ -73,6 +75,7 @@ export default function Section2(props: { id: string }) {
                         songsArray = songsArray.filter(item => item.singerId.includes(id));
                         // Cặp dữ liệu với tên bài hát
                         setDataFinal(songsArray);
+                        setLoading(false);
 
                     }
                 })
@@ -86,16 +89,24 @@ export default function Section2(props: { id: string }) {
                 <Title text="Danh sách bài hát" />
                 {/* List */}
                 <div className="grid grid-cols-1 gap-[10xp]">
-                    {dataFinal && (
-                        <>
-                            {dataFinal.map((item: any, index: number) => (
-                                <SongItemDetail
-                                    key={index}
-                                    {...item}
-                                />
+                    {loading ? (<>
+                        {Array(dataFinal?.length || 3)
+                            .fill("")
+                            .map((_, index) => (
+                                <SongItemDetailSkeleton key={index} />
                             ))}
-                        </>
-                    )}
+                    </>) : (<>
+                        {dataFinal && (
+                            <>
+                                {dataFinal.map((item: any, index: number) => (
+                                    <SongItemDetail
+                                        key={index}
+                                        {...item}
+                                    />
+                                ))}
+                            </>
+                        )}
+                    </>)}
 
                 </div>
             </div>

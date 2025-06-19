@@ -5,10 +5,11 @@ import { useEffect, useState } from "react";
 import { dbFirebase } from "@/app/firebaseConfig";
 import { onValue, ref } from "firebase/database";
 import React from "react";
+import CardItemSkeleton from "@/app/components/card/CardItemSkeleton";
 export default function Section1() {
 
     const [dataFinal, setDataFinal] = useState<any>();
-
+    const [loading, setLoading] = useState(true);
     useEffect(() => {
         const singersRef = ref(dbFirebase, 'singers');
         onValue(singersRef, (snapshot) => {
@@ -27,6 +28,7 @@ export default function Section1() {
                 }));
                 // set để cập nhật lại state dataFinal
                 setDataFinal(singersArray);
+                setLoading(false);
             }
         })
 
@@ -36,23 +38,32 @@ export default function Section1() {
             <div className="mt-[30px]">
                 <Title text="Danh Sách Ca Sĩ" />
                 <div className="grid grid-cols-5 gap-[20px]">
-                    {/* Kiểm tra dataFinal có dữ liệu hay không */}
-                    {dataFinal && (
-                        <>
-                            {dataFinal.map((item: any, index: number) => (
-                                <CardItem
-                                    key={index}
-                                    // image={item.image}
-                                    // title={item.title}
-                                    // description={item.description}
-                                    // link={item.link}
-                                    // Đây là cú pháp trả ra tất cả các thuộc tính của item 
-                                    {...item}
-                                />
+                    {/* Kiểm tra loading có đang tải hay không */}
+                    {loading ? (<>
+                        {/* Hiển thị skeleton khi đang tải dữ liệu */}
+                        {Array(dataFinal?.length && dataFinal.length > 0 ? dataFinal.length : 10)
+                            .fill("")
+                            .map((_, index) => (
+                                <CardItemSkeleton key={index} />
                             ))}
-                        </>
 
-                    )}
+                    </>) : (<>
+                        {/* Kiểm tra dataFinal có dữ liệu hay không */}
+                        {dataFinal && (
+                            <>
+                                {dataFinal.map((item: any, index: number) => (
+                                    <CardItem
+                                        key={index}
+                                        // Đây là cú pháp trả ra tất cả các thuộc tính của item 
+                                        {...item}
+                                    />
+                                ))}
+                            </>
+
+                        )}
+                    </>)}
+
+
 
                 </div>
             </div>

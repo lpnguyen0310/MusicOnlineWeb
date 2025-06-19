@@ -1,6 +1,7 @@
 "use client";
 
 import CardItem from "@/app/components/card/CardItems";
+import CardItemSkeleton from "@/app/components/card/CardItemSkeleton";
 import Title from "@/app/components/title/Title";
 import { dbFirebase } from "@/app/firebaseConfig";
 import { onValue, ref } from "firebase/database";
@@ -9,6 +10,7 @@ import { useEffect, useState } from "react";
 export default function Section1() {
 
     const [dataFinal, setDataFinal] = useState<any>();
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const categoriesRef = ref(dbFirebase, 'categories');
@@ -28,6 +30,7 @@ export default function Section1() {
                 }));
                 // Nên làm ở BE
                 setDataFinal(categoriesArray);
+                setLoading(false);
             }
         })
 
@@ -38,28 +41,27 @@ export default function Section1() {
             <div className="mt-[30px]">
                 <Title text="Danh Mục Bài Hát" />
                 <div className="grid grid-cols-5 gap-[20px]">
-                    {dataFinal && (
-                        <>
-                            {dataFinal.map((item: any, index: number) => (
-                                <CardItem
-                                    key={index}
-                                    // image={item.image}
-                                    // title={item.title}
-                                    // description={item.description}
-                                    // link={item.link}
-                                    // Đây là cú pháp trả ra tất cả các thuộc tính của item 
-                                    {...item}
-                                />
+
+                    {loading ? (<>
+
+                        {Array(dataFinal?.length && dataFinal.length > 0 ? dataFinal.length : 10)
+                            .fill("")
+                            .map((_, index) => (
+                                <CardItemSkeleton key={index} />
                             ))}
-
-                        </>
-
-
-                    )
-                    }
-
-
-
+                    </>) : (<>
+                        {dataFinal && (
+                            <>
+                                {dataFinal.map((item: any, index: number) => (
+                                    <CardItem
+                                        key={index}
+                                        {...item}
+                                    />
+                                ))}
+                            </>
+                        )
+                        }
+                    </>)}
 
                 </div>
             </div>

@@ -1,9 +1,7 @@
 "use client";
 
-import SongItem from "@/app/components/song/SongItem";
 import SongItemDetail from "@/app/components/song/SongItemDetail";
 import Title from "@/app/components/title/Title";
-import { FaPlay, FaRegHeart } from "react-icons/fa6";
 import { dbFirebase } from "@/app/firebaseConfig";
 import { onValue, ref } from "firebase/database";
 import { useEffect, useState } from "react";

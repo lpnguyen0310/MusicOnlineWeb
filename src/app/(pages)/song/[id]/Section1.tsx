@@ -18,7 +18,7 @@ export default function Section1(props: { id: string }) {
         onValue(songRef, (songSnapshot) => {
           const songData = songSnapshot.val();
           if (songData) {
-            let singersName: string[] = [];
+            const singersName: string[] = [];
 
             if (Array.isArray(songData.singerId)) {
               for (let singerId of songData.singerId) {

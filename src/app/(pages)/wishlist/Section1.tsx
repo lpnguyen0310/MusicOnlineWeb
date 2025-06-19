@@ -45,7 +45,7 @@ export default function Section1() {
                                     const song = data[key];
 
                                     // Lấy tên ca sĩ từ singerId[]
-                                    let singersName: string[] = [];
+                                    const singersName: string[] = [];
                                     if (Array.isArray(song.singerId)) {
                                         for (let id of song.singerId) {
                                             if (singerData[id]) {

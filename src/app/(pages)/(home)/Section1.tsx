@@ -27,7 +27,7 @@ export default function Section1() {
               // Lấy thông tin bài hát từ data
               const song = data[key];
               // Lặp qua song.id để lấy thông tin ca sĩ
-              let singersName = [];
+              const  singersName = [];
               // Kiểm tra nếu singerId là mảng và lấy tên ca sĩ tương ứng
               if (song.singerId && Array.isArray(song.singerId)) {
                 // Nếu singerId là mảng, lặp qua từng id để lấy tên ca sĩ

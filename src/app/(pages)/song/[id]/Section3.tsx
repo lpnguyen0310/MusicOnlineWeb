@@ -34,7 +34,7 @@ export default function Section3(props: { id: string }) {
                         if (allSongs) {
                             let songsArray = Object.keys(allSongs).map(key => {
                                 const song = allSongs[key];
-                                let singersName: string[] = [];
+                                const singersName: string[] = [];
 
                                 if (Array.isArray(song.singerId)) {
                                     for (let sid of song.singerId) {

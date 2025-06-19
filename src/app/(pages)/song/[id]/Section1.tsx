@@ -21,7 +21,7 @@ export default function Section1(props: { id: string }) {
             const singersName: string[] = [];
 
             if (Array.isArray(songData.singerId)) {
-              for (let singerId of songData.singerId) {
+              for (const singerId of songData.singerId) {
                 if (singerData[singerId]) {
                   singersName.push(singerData[singerId].title);
                 }

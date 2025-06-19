@@ -37,7 +37,7 @@ export default function Section3(props: { id: string }) {
                                 const singersName: string[] = [];
 
                                 if (Array.isArray(song.singerId)) {
-                                    for (let sid of song.singerId) {
+                                    for (const sid of song.singerId) {
                                         if (singerData[sid]) {
                                             singersName.push(singerData[sid].title);
                                         }

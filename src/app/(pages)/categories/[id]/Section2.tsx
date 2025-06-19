@@ -47,7 +47,7 @@ export default function Section2(props: { id: string }) {
                             // Kiểm tra nếu singerId là mảng và lấy tên ca sĩ tương ứng
                             if (song.singerId && Array.isArray(song.singerId)) {
                                 // Nếu singerId là mảng, lặp qua từng id để lấy tên ca sĩ
-                                for (let id of song.singerId) {
+                                for (const id of song.singerId) {
                                     // Kiểm tra nếu id tồn tại trong dữ liệu ca sĩ
                                     if (singerData[id]) {
                                         // Thêm tên ca sĩ vào mảng singersName
